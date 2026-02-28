@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Linkan M. Wuwungan — Hospitality Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --g:   #C49A3C;
+  --g2:  #E0B554;
+  --g3:  #F2CC7E;
+  --dk:  #090807;
+  --dk2: #0F0E0B;
+  --dk3: #171410;
+  --dk4: #201D16;
+  --dk5: #2A261C;
+  --iv:  #F4ECD8;
+  --iv2: #E6DBBF;
+  --mu:  #7B7260;
+  --wa:  #C2AD85;
+  --r:   #7A2C1E;
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
+body {
+  background:var(--dk);
+  color:var(--iv);
+  font-family:'DM Sans', sans-serif;
+  overflow-x:hidden;
+  cursor:none;
+  -webkit-font-smoothing:antialiased;
+}
+img { max-width:100%; display:block; }
+a { color:inherit; text-decoration:none; }
+button { font-family:inherit; }
+
+/* ============================================================
+   CURSOR — desktop only
+   ============================================================ */
+.cur-dot, .cur-ring {
+  position:fixed; pointer-events:none; z-index:9999;
+  border-radius:50%; transform:translate(-50%,-50%);
+}
+.cur-dot  { width:8px;  height:8px;  background:var(--g2); transition:width .15s,height .15s; }
+.cur-ring { width:38px; height:38px; border:1.5px solid rgba(200,160,50,.45);
+            transition:left .1s ease, top .1s ease, width .25s, height .25s; }
+body.hov .cur-dot  { width:16px; height:16px; opacity:.7; }
+body.hov .cur-ring { width:60px; height:60px; border-color:var(--g2); }
+@media(hover:none) { .cur-dot,.cur-ring { display:none; } body { cursor:auto; } }
+
+/* ============================================================
+   CANVAS
+   ============================================================ */
+#cvs { position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5; }
+@media(max-width:600px) { #cvs { opacity:.25; } }
+
+/* ============================================================
+   LOADER
+   ============================================================ */
+#ld {
+  position:fixed; inset:0; background:var(--dk); z-index:8000;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  transition:opacity .7s, visibility .7s;
+}
+#ld.out { opacity:0; visibility:hidden; pointer-events:none; }
+.ld-name {
+  font-family:'Cormorant Garamond',serif; font-style:italic;
+  font-size:clamp(1.6rem,5vw,2.4rem);
+  color:var(--g2); opacity:0; animation:fadeIn .5s .3s forwards;
+}
+.ld-track { width:min(220px,60vw); height:1px; background:rgba(196,154,60,.2); }
+.ld-fill  { height:100%; background:var(--g); width:0; animation:fillBar 1.6s .5s cubic-bezier(.77,0,.18,1) forwards; }
+.ld-pct   { font-size:.7rem; letter-spacing:3px; text-transform:uppercase; color:var(--mu);
+            opacity:0; animation:fadeIn .4s .4s forwards; }
+@keyframes fillBar { to { width:100%; } }
+@keyframes fadeIn  { to { opacity:1; } }
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+#nav {
+  position:fixed; inset:0 0 auto; z-index:500;
+  padding:22px clamp(20px,5vw,60px);
+  display:flex; align-items:center; justify-content:space-between;
+  transition:padding .4s, background .4s;
+}
+#nav.sc {
+  padding:14px clamp(20px,5vw,60px);
+  background:rgba(9,8,7,.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(196,154,60,.1);
+}
+.n-logo {
+  font-family:'Cormorant Garamond',serif;
+  font-style:italic; font-size:clamp(1rem,2.5vw,1.2rem);
+  color:var(--g2); letter-spacing:.3px;
+  cursor:none; user-select:none;
+  flex-shrink:0;
+}
+.n-links {
+  display:flex; gap:clamp(20px,3vw,36px); list-style:none;
+}
+.n-links a {
+  color:rgba(244,236,216,.4); font-size:.72rem;
+  letter-spacing:2px; text-transform:uppercase; font-weight:400;
+  transition:color .3s; cursor:none; white-space:nowrap;
+}
+.n-links a:hover { color:var(--g2); }
+/* hamburger */
+.burger {
+  display:none; flex-direction:column; gap:5px;
+  background:none; border:none; cursor:none; padding:4px; flex-shrink:0;
+}
+.burger span {
+  width:22px; height:1.5px; background:var(--iv); display:block; transition:.35s;
+}
+.burger.op span:nth-child(1) { transform:rotate(45deg) translate(4.5px,4.5px); }
+.burger.op span:nth-child(2) { opacity:0; transform:scaleX(0); }
+.burger.op span:nth-child(3) { transform:rotate(-45deg) translate(4.5px,-4.5px); }
+/* mobile overlay */
+#mob {
+  position:fixed; inset:0; z-index:490;
+  background:var(--dk2);
+  display:flex; flex-direction:column; justify-content:center; align-items:center; gap:36px;
+  transform:translateX(100%);
+  transition:transform .65s cubic-bezier(.77,0,.18,1);
+}
+#mob.op { transform:none; }
+#mob a {
+  font-family:'Cormorant Garamond',serif; font-size:clamp(2.2rem,7vw,3.2rem);
+  font-style:italic; color:var(--iv); opacity:.6;
+  transition:opacity .2s, color .2s;
+}
+#mob a:hover { opacity:1; color:var(--g2); }
+
+/* ============================================================
+   MARQUEE STRIP
+   ============================================================ */
+.mq-wrap {
+  overflow:hidden; background:var(--g);
+  padding:clamp(9px,2vw,13px) 0;
+  position:relative; z-index:10;
+}
+.mq-wrap.dark {
+  background:transparent;
+  border-top:1px solid rgba(196,154,60,.08);
+  border-bottom:1px solid rgba(196,154,60,.08);
+}
+.mq-track { display:flex; width:max-content; animation:mq 25s linear infinite; }
+.mq-wrap.rev .mq-track { animation-direction:reverse; }
+.mq-item {
+  display:flex; align-items:center; gap:clamp(10px,2vw,20px);
+  padding:0 clamp(14px,2.5vw,26px);
+  font-size:.65rem; letter-spacing:3px; text-transform:uppercase;
+  white-space:nowrap; font-weight:600;
+}
+.mq-wrap:not(.dark) .mq-item { color:var(--dk); }
+.mq-wrap.dark .mq-item { color:var(--mu); }
+.mq-dot {
+  width:4px; height:4px; border-radius:50%; flex-shrink:0;
+}
+.mq-wrap:not(.dark) .mq-dot { background:var(--dk); }
+.mq-wrap.dark .mq-dot { background:rgba(196,154,60,.4); }
+@keyframes mq { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+
+/* ============================================================
+   SECTION COMMONS
+   ============================================================ */
+.sec { padding:clamp(60px,10vw,120px) clamp(20px,5vw,60px); }
+.sec-label {
+  display:flex; align-items:center; gap:12px;
+  font-size:.65rem; letter-spacing:5px; text-transform:uppercase;
+  color:var(--g); margin-bottom:14px;
+}
+.sec-label-line { width:32px; height:1px; background:var(--g); flex-shrink:0; }
+.sh2 {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2rem,5vw,4rem);
+  font-weight:300; line-height:1.05; margin-bottom:8px;
+}
+.sh2 em { font-style:italic; color:var(--g2); }
+.inner { max-width:1360px; margin:0 auto; }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height:100svh;
+  padding:clamp(80px,14vw,140px) clamp(20px,5vw,60px) clamp(40px,6vw,80px);
+  display:flex; align-items:center;
+  position:relative; overflow:hidden;
+}
+/* mesh bg */
+.h-mesh {
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 60% at 75% 35%, rgba(196,154,60,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 15% 80%, rgba(122,44,30,.1) 0%,transparent 55%);
+}
+/* grid svg */
+.h-grid {
+  position:absolute; inset:0; pointer-events:none; opacity:.035;
+  background-image:
+    linear-gradient(rgba(196,154,60,1) 1px, transparent 1px),
+    linear-gradient(90deg,rgba(196,154,60,1) 1px,transparent 1px);
+  background-size:70px 70px;
+}
+/* scan */
+.h-scan {
+  position:absolute; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,154,60,.35),transparent);
+  animation:scan 7s ease-in-out infinite; pointer-events:none;
+}
+@keyframes scan { 0%,100%{top:5%;opacity:0} 15%{opacity:1} 85%{opacity:.8} 99%{top:94%;opacity:0} }
+/* corner accents */
+.h-corner {
+  position:absolute; width:clamp(50px,8vw,100px); height:clamp(50px,8vw,100px);
+  pointer-events:none;
+}
+.h-corner.tl { top:clamp(80px,12vw,120px); left:clamp(20px,5vw,60px);
+  border-top:1px solid rgba(196,154,60,.2); border-left:1px solid rgba(196,154,60,.2); }
+.h-corner.br { bottom:clamp(30px,5vw,70px); right:clamp(20px,5vw,60px);
+  border-bottom:1px solid rgba(196,154,60,.2); border-right:1px solid rgba(196,154,60,.2); }
+
+/* hero inner */
+.hero-inner {
+  position:relative; z-index:2; width:100%; max-width:1360px; margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr clamp(160px,20vw,240px);
+  gap:clamp(24px,4vw,60px);
+  align-items:center;
+}
+/* greeting badge */
+.h-badge {
+  display:inline-flex; align-items:center; gap:10px;
+  border:1px solid rgba(196,154,60,.35);
+  padding:7px 18px; margin-bottom:clamp(20px,3vw,32px);
+}
+.h-badge-dot {
+  width:6px; height:6px; background:var(--g2); border-radius:50%;
+  animation:blink 1.3s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+.h-badge-txt { font-size:.65rem; letter-spacing:3.5px; text-transform:uppercase; color:var(--g2); }
+/* greeting line */
+.h-hi {
+  font-family:'DM Sans',sans-serif; font-size:clamp(.85rem,1.6vw,1rem);
+  letter-spacing:2px; text-transform:uppercase; color:var(--mu);
+  margin-bottom:4px; font-weight:300;
+}
+/* name */
+.h-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.8rem,7vw,8rem);
+  font-weight:300; line-height:.9; margin-bottom:clamp(16px,2.5vw,28px);
+}
+.h-name em { font-style:italic; color:var(--g2); display:block; }
+.h-name .line3 {
+  -webkit-text-stroke:1px rgba(196,154,60,.45);
+  color:transparent;
+  display:block;
+}
+/* role pills */
+.h-pills {
+  display:flex; flex-wrap:wrap; gap:8px; margin-bottom:clamp(24px,4vw,44px);
+}
+.h-pill {
+  padding:5px 14px; font-size:.7rem; letter-spacing:1.5px; text-transform:uppercase;
+  border:1px solid rgba(196,154,60,.2); color:var(--wa);
+  transition:all .3s; cursor:none;
+}
+.h-pill:hover { background:rgba(196,154,60,.1); border-color:var(--g2); color:var(--g2); }
+/* cta */
+.h-btns { display:flex; gap:12px; flex-wrap:wrap; }
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:clamp(11px,1.5vw,15px) clamp(22px,3vw,38px);
+  font-size:.74rem; letter-spacing:2px; text-transform:uppercase;
+  font-family:'DM Sans',sans-serif; font-weight:600;
+  cursor:none; border:none; transition:all .3s;
+  position:relative; overflow:hidden; flex-shrink:0;
+}
+.btn svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; flex-shrink:0; }
+.btn-fill { background:var(--g); color:var(--dk); }
+.btn-fill::after { content:''; position:absolute; inset:0;
+  background:rgba(255,255,255,.15); transform:translateX(-110%) skewX(-15deg);
+  transition:transform .5s; }
+.btn-fill:hover::after { transform:translateX(120%) skewX(-15deg); }
+.btn-fill:hover { background:var(--g2); transform:translateY(-3px); box-shadow:0 18px 40px rgba(196,154,60,.28); }
+.btn-out { background:transparent; border:1px solid rgba(244,236,216,.2); color:var(--iv); }
+.btn-out:hover { border-color:var(--g2); color:var(--g2); transform:translateY(-3px); }
+/* side stats */
+.h-stats { display:flex; flex-direction:column; gap:2px; }
+.h-stat {
+  background:var(--dk3);
+  border:1px solid rgba(196,154,60,.1);
+  padding:clamp(14px,2vw,22px) clamp(16px,2vw,24px);
+  transition:all .35s; cursor:none;
+  position:relative; overflow:hidden;
+}
+.h-stat::before {
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:3px; background:var(--g); transform:scaleY(0); transition:transform .4s; transform-origin:bottom;
+}
+.h-stat:hover::before { transform:scaleY(1); }
+.h-stat:hover { border-color:rgba(196,154,60,.28); transform:translateX(-3px); }
+.h-stat-n {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.8rem,3.5vw,2.6rem);
+  font-weight:300; color:var(--g2); line-height:1;
+}
+.h-stat-l { font-size:.65rem; letter-spacing:2px; text-transform:uppercase; color:var(--mu); margin-top:4px; }
+.h-stat-bar { height:1.5px; background:rgba(255,255,255,.06); margin-top:12px; }
+.h-stat-fill { height:100%; background:linear-gradient(90deg,var(--g),var(--g2)); width:0; transition:width 1.5s ease; }
+
+/* ============================================================
+   ABOUT
+   ============================================================ */
+.about { background:var(--dk2); position:relative; overflow:hidden; }
+.about::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--g),transparent);
+}
+.about-deco {
+  position:absolute; bottom:-40px; right:-10px; pointer-events:none;
+  font-family:'Cormorant Garamond',serif; font-size:clamp(6rem,15vw,16rem);
+  font-weight:700; color:rgba(196,154,60,.025); line-height:1; user-select:none;
+}
+.about-grid {
+  display:grid;
+  grid-template-columns:clamp(240px,30vw,380px) 1fr;
+  gap:clamp(30px,5vw,80px);
+  align-items:start;
+}
+/* profile card */
+.pcard {
+  background:var(--dk3); border:1px solid rgba(196,154,60,.14);
+  overflow:hidden; position:relative;
+}
+.pcard-top {
+  padding:clamp(24px,4vw,44px) clamp(20px,3.5vw,36px) clamp(20px,3vw,30px);
+  background:linear-gradient(150deg,var(--dk4),var(--dk3));
+  position:relative;
+}
+.pcard-top::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(196,154,60,.18),transparent);
+}
+.pcard-glow {
+  position:absolute; top:-50px; right:-50px; width:160px; height:160px;
+  background:radial-gradient(circle,rgba(196,154,60,.1),transparent);
+  border-radius:50%; pointer-events:none;
+}
+.pcard-av {
+  width:clamp(60px,8vw,82px); height:clamp(60px,8vw,82px);
+  border-radius:50%; border:2px solid rgba(196,154,60,.3);
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,rgba(196,154,60,.15),rgba(122,44,30,.1));
+  margin-bottom:clamp(14px,2vw,22px); position:relative;
+}
+.pcard-av::after {
+  content:''; position:absolute; inset:-6px; border-radius:50%;
+  border:1px dashed rgba(196,154,60,.2); animation:spin 18s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+.pcard-av svg { width:clamp(28px,4vw,38px); height:clamp(28px,4vw,38px); stroke:var(--g2); fill:none; stroke-width:1; }
+.pcard-name {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.3rem,2.5vw,1.8rem); font-weight:400; margin-bottom:3px;
+  line-height:1.2;
+}
+.pcard-role { font-size:.66rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--g); }
+.pcard-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:clamp(16px,2vw,24px); }
+.ptag {
+  padding:4px 12px; font-size:.66rem; letter-spacing:1.5px; text-transform:uppercase;
+  border:1px solid rgba(196,154,60,.18); color:var(--wa);
+  transition:all .3s; cursor:none;
+}
+.ptag:hover { background:rgba(196,154,60,.1); border-color:var(--g2); color:var(--g2); }
+/* stats row */
+.pcard-stats { display:grid; grid-template-columns:repeat(4,1fr); }
+.ps {
+  padding:clamp(14px,2vw,20px) 10px; text-align:center;
+  border-right:1px solid rgba(196,154,60,.07);
+  transition:.3s; cursor:none;
+}
+.ps:last-child { border-right:none; }
+.ps:hover { background:var(--dk4); }
+.ps-n {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.4rem,2.5vw,2rem); font-weight:300;
+  color:var(--g2); line-height:1; display:block;
+}
+.ps-l { font-size:.58rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--mu); margin-top:4px; display:block; }
+
+/* about text */
+.about-text p { color:var(--mu); line-height:1.9; margin-bottom:16px; font-size:clamp(.88rem,1.5vw,.97rem); font-weight:300; }
+/* highlight grid */
+.hl-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:clamp(24px,3vw,38px); }
+.hl {
+  background:var(--dk3); border:1px solid rgba(196,154,60,.1);
+  padding:clamp(14px,2vw,18px) clamp(14px,2vw,20px);
+  display:flex; gap:12px; align-items:flex-start;
+  transition:all .3s; cursor:none;
+}
+.hl:hover { border-color:rgba(196,154,60,.28); background:var(--dk4); transform:translateY(-2px); }
+.hl-ic {
+  flex-shrink:0; width:34px; height:34px;
+  border:1px solid rgba(196,154,60,.22);
+  display:flex; align-items:center; justify-content:center;
+}
+.hl-ic svg { width:15px; height:15px; stroke:var(--g2); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.hl-t { font-size:.82rem; color:var(--wa); font-weight:500; }
+.hl-s { font-size:.7rem; color:var(--mu); margin-top:2px; }
+
+/* ============================================================
+   SKILLS
+   ============================================================ */
+.skills { background:var(--dk); }
+.sk-head {
+  display:flex; align-items:flex-end; justify-content:space-between;
+  flex-wrap:wrap; gap:16px; margin-bottom:clamp(40px,6vw,70px);
+}
+.sk-num {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.5rem,8vw,7rem); font-weight:300;
+  color:rgba(196,154,60,.06); line-height:1;
+}
+.sk-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(min(100%,280px),1fr));
+  gap:2px;
+}
+.skc {
+  background:var(--dk2); padding:clamp(24px,3.5vw,38px) clamp(20px,3vw,34px);
+  position:relative; overflow:hidden; cursor:none;
+  transition:background .3s, transform .35s, box-shadow .35s;
+}
+.skc-glow {
+  position:absolute; top:-80px; right:-80px;
+  width:180px; height:180px;
+  background:radial-gradient(circle,rgba(196,154,60,.07),transparent);
+  border-radius:50%; opacity:0; transition:opacity .4s;
+}
+.skc::before {
+  content:''; position:absolute; top:0; left:0;
+  width:0; height:3px;
+  background:linear-gradient(90deg,var(--g),var(--g2));
+  transition:width .5s cubic-bezier(.77,0,.18,1);
+}
+.skc:hover { background:var(--dk3); transform:translateY(-6px); box-shadow:0 28px 55px rgba(0,0,0,.6); }
+.skc:hover .skc-glow { opacity:1; }
+.skc:hover::before { width:100%; }
+.sk-ic {
+  width:clamp(44px,5.5vw,54px); height:clamp(44px,5.5vw,54px);
+  border:1px solid rgba(196,154,60,.2);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:clamp(16px,2.5vw,22px); transition:all .35s;
+}
+.skc:hover .sk-ic { border-color:var(--g); background:rgba(196,154,60,.07); }
+.sk-ic svg { width:clamp(18px,2.5vw,23px); height:clamp(18px,2.5vw,23px); stroke:var(--g); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; transition:stroke .3s; }
+.skc:hover .sk-ic svg { stroke:var(--g2); }
+.sk-n { font-family:'Cormorant Garamond',serif; font-size:clamp(1.2rem,2vw,1.45rem); margin-bottom:8px; }
+.sk-d { color:var(--mu); font-size:clamp(.8rem,1.2vw,.85rem); line-height:1.7; font-weight:300; }
+.sk-bw { margin-top:clamp(18px,2.5vw,24px); height:1.5px; background:rgba(255,255,255,.06); }
+.sk-b  { height:100%; background:linear-gradient(90deg,var(--g),var(--g2)); width:0; transition:width 1.8s cubic-bezier(.77,0,.18,1); }
+.sk-pct { font-size:.65rem; color:var(--g); margin-top:5px; text-align:right; opacity:0; transition:opacity .3s .3s; }
+.skc:hover .sk-pct { opacity:1; }
+
+/* ============================================================
+   EXPERIENCE
+   ============================================================ */
+.exp { background:var(--dk3); position:relative; }
+.exp::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--g),transparent);
+}
+.exp-layout {
+  display:grid;
+  grid-template-columns:clamp(180px,22vw,270px) 1fr;
+  border:1px solid rgba(196,154,60,.1);
+  margin-top:clamp(30px,5vw,60px);
+}
+.exp-sb { border-right:1px solid rgba(196,154,60,.1); }
+.exp-tb {
+  display:flex; align-items:stretch;
+  background:none; border:none;
+  border-bottom:1px solid rgba(196,154,60,.07);
+  width:100%; text-align:left; cursor:none;
+  position:relative; overflow:hidden; transition:background .3s;
+}
+.exp-tb::before {
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  width:0; background:var(--g); transition:width .3s;
+}
+.exp-tb:hover::before, .exp-tb.on::before { width:3px; }
+.exp-tb.on { background:rgba(196,154,60,.05); }
+.exp-tb-in { padding:clamp(14px,2vw,22px) clamp(16px,2.5vw,24px); flex:1; }
+.exp-tb-t { font-size:.72rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--mu); font-family:'DM Sans',sans-serif; transition:color .3s; }
+.exp-tb-s { font-family:'Cormorant Garamond',serif; font-size:clamp(1rem,1.5vw,1.15rem); font-style:italic; color:rgba(244,236,216,.35); transition:color .3s; }
+.exp-tb:hover .exp-tb-t, .exp-tb.on .exp-tb-t { color:var(--g2); }
+.exp-tb:hover .exp-tb-s, .exp-tb.on .exp-tb-s { color:var(--iv); }
+/* panel */
+.exp-panel { display:none; padding:clamp(24px,4vw,48px) clamp(24px,4vw,52px); }
+.exp-panel.on { display:block; animation:panIn .4s ease both; }
+@keyframes panIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
+.ep-hd {
+  display:flex; align-items:flex-start; justify-content:space-between;
+  gap:clamp(12px,2vw,20px); margin-bottom:clamp(24px,3.5vw,40px);
+  flex-wrap:wrap;
+}
+.ep-title { font-family:'Cormorant Garamond',serif; font-size:clamp(1.5rem,3vw,2.4rem); font-weight:300; margin-bottom:4px; }
+.ep-role { font-size:.68rem; letter-spacing:2.5px; text-transform:uppercase; color:var(--g); }
+.ep-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  border:1px solid rgba(196,154,60,.22);
+  padding:9px 18px; font-size:.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--wa);
+  flex-shrink:0;
+}
+.ep-badge svg { width:13px; height:13px; stroke:var(--g); fill:none; stroke-width:1.5; }
+.ep-list { list-style:none; }
+.ep-li {
+  display:flex; gap:16px; padding:clamp(12px,1.5vw,17px) 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:padding .2s;
+}
+.ep-li:last-child { border-bottom:none; }
+.ep-li:hover { padding-left:8px; }
+.ep-dot { width:20px; flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-top:3px; }
+.ep-dot svg { width:13px; height:13px; stroke:var(--g); fill:none; stroke-width:2; stroke-linecap:round; }
+.ep-txt { color:var(--mu); font-size:clamp(.84rem,1.2vw,.9rem); font-weight:300; line-height:1.75; }
+
+/* ============================================================
+   SOFT SKILLS
+   ============================================================ */
+.soft { background:var(--dk2); }
+.sf-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(min(100%,165px),1fr));
+  gap:2px; margin-top:clamp(36px,5vw,60px);
+}
+.sfc {
+  background:var(--dk3); padding:clamp(22px,3vw,32px) clamp(16px,2.5vw,22px);
+  text-align:center; transition:all .35s; cursor:none;
+  position:relative; overflow:hidden;
+}
+.sfc::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:0;
+  background:linear-gradient(to top,rgba(196,154,60,.07),transparent);
+  transition:height .4s;
+}
+.sfc:hover::after { height:100%; }
+.sfc:hover { transform:translateY(-5px); box-shadow:0 22px 45px rgba(0,0,0,.5); }
+.sf-ic {
+  width:clamp(44px,5.5vw,52px); height:clamp(44px,5.5vw,52px);
+  margin:0 auto clamp(14px,2vw,18px);
+  border:1px solid rgba(196,154,60,.2); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  transition:all .35s;
+}
+.sfc:hover .sf-ic { border-color:var(--g2); background:rgba(196,154,60,.1); transform:scale(1.1) rotate(6deg); }
+.sf-ic svg { width:clamp(18px,2.5vw,21px); height:clamp(18px,2.5vw,21px); stroke:var(--g); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; transition:stroke .3s; }
+.sfc:hover .sf-ic svg { stroke:var(--g2); }
+.sf-n { font-family:'Cormorant Garamond',serif; font-size:clamp(.95rem,1.5vw,1.1rem); font-weight:400; margin-bottom:3px; position:relative; }
+.sf-s { font-size:.68rem; color:var(--mu); letter-spacing:.8px; position:relative; }
+
+/* ============================================================
+   ROLES
+   ============================================================ */
+.roles { background:var(--dk); position:relative; }
+.roles::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--g),transparent);
+}
+.roles-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(min(100%,440px),1fr));
+  gap:2px; margin-top:clamp(36px,5vw,60px);
+}
+.rc { background:var(--dk2); padding:clamp(30px,4.5vw,52px) clamp(24px,4vw,48px); position:relative; overflow:hidden; cursor:none; }
+.rc-deco { position:absolute; top:0; right:0; width:clamp(80px,12vw,160px); height:clamp(80px,12vw,160px);
+  border-bottom:1px solid rgba(196,154,60,.06); border-left:1px solid rgba(196,154,60,.06); }
+.rc-num { position:absolute; bottom:clamp(16px,2.5vw,24px); right:clamp(20px,3vw,28px);
+  font-family:'Cormorant Garamond',serif; font-size:clamp(3rem,6vw,5rem);
+  font-weight:700; color:rgba(196,154,60,.04); line-height:1; pointer-events:none; }
+.rc-hd { display:flex; align-items:center; gap:14px; margin-bottom:clamp(22px,3.5vw,36px); }
+.rc-ic { width:clamp(40px,5vw,50px); height:clamp(40px,5vw,50px); border:1px solid rgba(196,154,60,.28);
+  display:flex; align-items:center; justify-content:center; transition:all .3s; }
+.rc:hover .rc-ic { background:rgba(196,154,60,.08); border-color:var(--g2); }
+.rc-ic svg { width:clamp(18px,2.5vw,22px); height:clamp(18px,2.5vw,22px); stroke:var(--g); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.rc-t { font-family:'Cormorant Garamond',serif; font-size:clamp(1.4rem,2.5vw,1.9rem); font-weight:300; }
+.rr { display:flex; gap:12px; align-items:flex-start; padding:clamp(10px,1.5vw,13px) 0;
+  border-bottom:1px solid rgba(255,255,255,.04); transition:padding .2s; }
+.rr:last-child { border-bottom:none; }
+.rr:hover { padding-left:8px; }
+.rr-dot { width:5px; height:5px; background:var(--g); border-radius:50%; flex-shrink:0; margin-top:7px; transition:.2s; }
+.rr:hover .rr-dot { background:var(--g2); }
+.rr-n { font-size:clamp(.84rem,1.2vw,.9rem); font-weight:500; color:var(--iv); margin-bottom:2px; }
+.rr-d { font-size:clamp(.72rem,1.1vw,.76rem); color:var(--mu); font-weight:300; }
+
+/* ============================================================
+   CONTACT
+   ============================================================ */
+.contact { background:var(--dk2); text-align:center; position:relative; overflow:hidden; }
+.contact::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--g),transparent);
+}
+.ct-rings { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); pointer-events:none; }
+.ct-ring { position:absolute; border-radius:50%; border:1px solid rgba(196,154,60,.04);
+  transform:translate(-50%,-50%); animation:pring 4s ease-in-out infinite; }
+.ct-ring:nth-child(1){width:260px;height:260px;animation-delay:0s}
+.ct-ring:nth-child(2){width:480px;height:480px;animation-delay:.8s}
+.ct-ring:nth-child(3){width:700px;height:700px;animation-delay:1.6s}
+.ct-ring:nth-child(4){width:900px;height:900px;animation-delay:2.4s}
+@keyframes pring { 0%,100%{opacity:.4;transform:translate(-50%,-50%) scale(1)} 50%{opacity:.08;transform:translate(-50%,-50%) scale(1.04)} }
+.ct-bg { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  font-family:'Cormorant Garamond',serif; font-size:clamp(5rem,18vw,20rem);
+  font-weight:700; white-space:nowrap; color:rgba(196,154,60,.022); pointer-events:none; user-select:none; }
+.ct-in { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+.ct-h {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3rem,8vw,7.5rem); font-weight:300; line-height:.9;
+  margin:clamp(20px,3vw,28px) 0 clamp(20px,3vw,28px);
+}
+.ct-h em { font-style:italic; color:var(--g2); }
+.ct-p { color:var(--mu); font-size:clamp(.88rem,1.3vw,.97rem); line-height:1.85; font-weight:300; max-width:460px; margin:0 auto clamp(36px,5vw,52px); }
+.ct-links { display:flex; justify-content:center; flex-wrap:wrap; gap:10px; }
+.ct-a {
+  display:inline-flex; align-items:center; gap:9px;
+  padding:clamp(11px,1.5vw,14px) clamp(18px,2.5vw,26px);
+  border:1px solid rgba(196,154,60,.2); color:var(--iv2);
+  font-size:.72rem; letter-spacing:1.8px; text-transform:uppercase;
+  transition:all .35s; cursor:none; position:relative; overflow:hidden;
+}
+.ct-a::before { content:''; position:absolute; inset:0;
+  background:rgba(196,154,60,.08); transform:translateY(100%); transition:transform .3s; }
+.ct-a:hover::before { transform:none; }
+.ct-a:hover { border-color:var(--g2); color:var(--g2); transform:translateY(-2px); }
+.ct-a svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:1.5; position:relative; flex-shrink:0; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  padding:clamp(20px,3vw,28px) clamp(20px,5vw,60px);
+  background:var(--dk);
+  display:flex; justify-content:space-between; align-items:center;
+  border-top:1px solid rgba(255,255,255,.04);
+  flex-wrap:wrap; gap:12px;
+}
+.f-logo { font-family:'Cormorant Garamond',serif; font-style:italic; color:var(--g2); font-size:clamp(.9rem,1.5vw,1.05rem); }
+.f-txt { color:var(--mu); font-size:clamp(.65rem,.9vw,.72rem); font-weight:300; }
+.f-dots { display:flex; gap:5px; align-items:center; }
+.f-dots span { width:4px; height:4px; border-radius:50%; }
+.f-dots span:nth-child(1){ background:rgba(196,154,60,.3); }
+.f-dots span:nth-child(2){ background:rgba(196,154,60,.6); }
+.f-dots span:nth-child(3){ background:var(--g2); }
+
+/* ============================================================
+   REVEAL
+   ============================================================ */
+.rv  { opacity:0; transform:translateY(55px); transition:opacity .95s, transform .95s; }
+.rvl { opacity:0; transform:translateX(-55px); transition:opacity .95s, transform .95s; }
+.rvr { opacity:0; transform:translateX(55px); transition:opacity .95s, transform .95s; }
+.rsc { opacity:0; transform:scale(.93); transition:opacity .95s, transform .95s; }
+.rv.vis,.rvl.vis,.rvr.vis,.rsc.vis { opacity:1; transform:none; }
+[data-d="1"]{transition-delay:.1s}[data-d="2"]{transition-delay:.2s}
+[data-d="3"]{transition-delay:.3s}[data-d="4"]{transition-delay:.4s}
+[data-d="5"]{transition-delay:.5s}[data-d="6"]{transition-delay:.6s}
+
+/* ============================================================
+   HERO WORD REVEAL
+   ============================================================ */
+.wr { overflow:hidden; display:block; }
+.wr span { display:block; animation:wup .85s cubic-bezier(.77,0,.18,1) both; }
+@keyframes wup { from{transform:translateY(110%)} to{transform:translateY(0)} }
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+@media(max-width:1100px) {
+  .hero-inner { grid-template-columns:1fr; }
+  .h-stats { flex-direction:row; flex-wrap:wrap; }
+  .h-stat { flex:1; min-width:clamp(120px,20vw,160px); }
+  .about-grid { grid-template-columns:1fr; }
+  .roles-grid { grid-template-columns:1fr; }
+  .exp-layout { grid-template-columns:1fr; }
+  .exp-sb {
+    border-right:none; border-bottom:1px solid rgba(196,154,60,.1);
+    display:flex; overflow-x:auto; -webkit-overflow-scrolling:touch;
+  }
+  .exp-tb { flex-shrink:0; }
+  .exp-tb::before { width:100%; height:0; bottom:0; top:auto; }
+  .exp-tb:hover::before,.exp-tb.on::before { height:3px; width:100%; }
+}
+@media(max-width:768px) {
+  #nav,.n-links { gap:0; }
+  .n-links { display:none; }
+  .burger { display:flex; }
+  .h-corner.br { display:none; }
+  .about-grid { gap:clamp(24px,4vw,40px); }
+  .pcard-stats { grid-template-columns:repeat(2,1fr); }
+  .hl-grid { grid-template-columns:1fr; }
+  .sk-head { flex-direction:column; align-items:flex-start; gap:8px; }
+  .ep-hd { flex-direction:column; align-items:flex-start; }
+  footer { flex-direction:column; text-align:center; }
+  .ct-links { gap:8px; }
+}
+@media(max-width:480px) {
+  .h-pills { gap:6px; }
+  .h-btns { flex-direction:column; }
+  .btn { justify-content:center; }
+  .h-stats { gap:2px; }
+  .h-stat { min-width:calc(50% - 1px); }
+  .sf-grid { grid-template-columns:repeat(2,1fr); }
+  .ct-links { flex-direction:column; align-items:center; }
+  .ct-a { width:100%; max-width:280px; justify-content:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="ld">
+  <div class="ld-name">Linkan M. Wuwungan</div>
+  <div class="ld-track"><div class="ld-fill"></div></div>
+  <div class="ld-pct" id="ldp">0%</div>
+</div>
+
+<!-- CURSOR (desktop only) -->
+<div class="cur-dot" id="cd"></div>
+<div class="cur-ring" id="cr"></div>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="cvs"></canvas>
+
+<!-- MOBILE NAV -->
+<nav id="mob">
+  <a href="#about"  onclick="cm()">Tentang</a>
+  <a href="#skills" onclick="cm()">Keahlian</a>
+  <a href="#exp"    onclick="cm()">Pengalaman</a>
+  <a href="#roles"  onclick="cm()">Bidang</a>
+  <a href="#contact" onclick="cm()">Kontak</a>
+</nav>
+
+<!-- NAV -->
+<header id="nav">
+  <div class="n-logo" data-sc="Linkan M. Wuwungan">Linkan M. Wuwungan</div>
+  <ul class="n-links">
+    <li><a href="#about">Tentang</a></li>
+    <li><a href="#skills">Keahlian</a></li>
+    <li><a href="#exp">Pengalaman</a></li>
+    <li><a href="#roles">Bidang</a></li>
+    <li><a href="#contact">Kontak</a></li>
+  </ul>
+  <button class="burger" id="bg" onclick="tm()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- TOP MARQUEE -->
+<div class="mq-wrap" style="margin-top:clamp(60px,10vw,78px)">
+  <div class="mq-track" id="mq1"></div>
+</div>
+
+<!-- ══════ HERO ══════ -->
+<section class="hero" id="home">
+  <div class="h-mesh"></div>
+  <div class="h-grid"></div>
+  <div class="h-scan"></div>
+  <div class="h-corner tl"></div>
+  <div class="h-corner br"></div>
+
+  <div class="hero-inner">
+    <!-- LEFT -->
+    <div>
+      <div class="h-badge" style="animation:fadeIn .7s .4s both">
+        <span class="h-badge-dot"></span>
+        <span class="h-badge-txt">Hospitality &amp; F&amp;B Professional</span>
+        <span class="h-badge-dot" style="animation-delay:.7s"></span>
+      </div>
+      <div class="h-hi" style="animation:fadeIn .6s .5s both">Hai, Saya</div>
+      <h1 class="h-name" id="hname">
+        <span class="wr"><span style="animation-delay:.5s">Linkan</span></span>
+        <span class="wr"><em style="animation-delay:.65s">M. Wuwungan</em></span>
+      </h1>
+      <div class="h-pills" style="animation:fadeIn .7s .85s both">
+        <span class="h-pill">Barista</span>
+        <span class="h-pill">Bartender</span>
+        <span class="h-pill">Front Office</span>
+        <span class="h-pill">Singer</span>
+        <span class="h-pill">Dancer</span>
+        <span class="h-pill">Artistic</span>
+      </div>
+      <p style="color:var(--mu);font-size:clamp(.86rem,1.3vw,.96rem);line-height:1.85;max-width:480px;margin-bottom:clamp(24px,3.5vw,42px);font-weight:300;animation:fadeIn .8s 1s both">
+        Profesional muda di bidang perhotelan dan food &amp; beverage dari Wuwungan, yang berdedikasi menciptakan pengalaman tak terlupakan bagi setiap tamu.
+      </p>
+      <div class="h-btns" style="animation:fadeIn .8s 1.1s both">
+        <a href="#exp"     class="btn btn-fill mag">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Pengalaman Saya
+        </a>
+        <a href="#contact" class="btn btn-out">Hubungi</a>
+      </div>
+    </div>
+    <!-- RIGHT STATS -->
+    <div class="h-stats" id="hstats">
+      <div class="h-stat rsc" data-d="2">
+        <div class="h-stat-n" data-t="4">0</div>
+        <div class="h-stat-l">Thn. Pengalaman</div>
+        <div class="h-stat-bar"><div class="h-stat-fill" data-w="80"></div></div>
+      </div>
+      <div class="h-stat rsc" data-d="3">
+        <div class="h-stat-n" data-t="7">0</div>
+        <div class="h-stat-l">Core Skills</div>
+        <div class="h-stat-bar"><div class="h-stat-fill" data-w="90"></div></div>
+      </div>
+      <div class="h-stat rsc" data-d="4">
+        <div class="h-stat-n" data-t="13">0</div>
+        <div class="h-stat-l">Jabatan</div>
+        <div class="h-stat-bar"><div class="h-stat-fill" data-w="100"></div></div>
+      </div>
+      <div class="h-stat rsc" data-d="5">
+        <div class="h-stat-n" data-t="100">0</div>
+        <div class="h-stat-l">Dedikasi %</div>
+        <div class="h-stat-bar"><div class="h-stat-fill" data-w="100"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ABOUT ══════ -->
+<section class="about sec" id="about">
+  <div class="about-deco">L.M.W</div>
+  <div class="inner">
+    <div class="about-grid">
+      <!-- Card -->
+      <div class="rvl">
+        <div class="pcard">
+          <div class="pcard-top">
+            <div class="pcard-glow"></div>
+            <div class="pcard-av">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="pcard-name">Linkan M. Wuwungan</div>
+            <div class="pcard-role">F&amp;B · Perhotelan · Arts</div>
+            <div class="pcard-tags">
+              <span class="ptag">Barista</span>
+              <span class="ptag">Bartender</span>
+              <span class="ptag">Front Office</span>
+              <span class="ptag">Singer</span>
+              <span class="ptag">Dancer</span>
+              <span class="ptag">Artistic</span>
+            </div>
+          </div>
+          <div class="pcard-stats">
+            <div class="ps"><span class="ps-n" data-t="4">0</span><span class="ps-l">Pengalaman</span></div>
+            <div class="ps"><span class="ps-n" data-t="7">0</span><span class="ps-l">Skills</span></div>
+            <div class="ps"><span class="ps-n" data-t="13">0</span><span class="ps-l">Jabatan</span></div>
+            <div class="ps"><span class="ps-n" data-t="100">0</span><span class="ps-l">Dedikasi</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Text -->
+      <div class="rvr">
+        <div class="sec-label"><div class="sec-label-line"></div>Tentang Saya</div>
+        <h2 class="sh2" style="margin-bottom:clamp(20px,3vw,28px)">Siapa<br><em>Linkan Wuwungan?</em></h2>
+        <div class="about-text">
+          <p>Halo! Saya Linkan M. Wuwungan, seorang profesional muda yang bersemangat dalam industri perhotelan dan food &amp; beverage. Dengan berbagai pengalaman nyata di lapangan, saya selalu berkomitmen memberikan layanan terbaik.</p>
+          <p>Saya percaya setiap tamu berhak mendapatkan pengalaman istimewa. Selain keahlian teknis di F&amp;B dan hotel, saya juga memiliki bakat seni — menyanyi, menari, dan kreativitas artistik yang memperkaya pengalaman tamu.</p>
+        </div>
+        <div class="hl-grid">
+          <div class="hl rv" data-d="1">
+            <div class="hl-ic"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div>
+            <div><div class="hl-t">Barista &amp; Bartender</div><div class="hl-s">Certified Brewing Skills</div></div>
+          </div>
+          <div class="hl rv" data-d="2">
+            <div class="hl-ic"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+            <div><div class="hl-t">Front Office</div><div class="hl-s">PKL Hotel Certified</div></div>
+          </div>
+          <div class="hl rv" data-d="3">
+            <div class="hl-ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+            <div><div class="hl-t">Performing Arts</div><div class="hl-s">Singer &amp; Dancer</div></div>
+          </div>
+          <div class="hl rv" data-d="4">
+            <div class="hl-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+            <div><div class="hl-t">Bilingual</div><div class="hl-s">Indonesia &amp; Inggris</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 -->
+<div class="mq-wrap dark rev">
+  <div class="mq-track" id="mq2"></div>
+</div>
+
+<!-- ══════ SKILLS ══════ -->
+<section class="skills sec" id="skills">
+  <div class="inner">
+    <div class="sk-head rv">
+      <div>
+        <div class="sec-label"><div class="sec-label-line"></div>Keahlian Utama</div>
+        <h2 class="sh2">Apa yang Saya <em>Kuasai</em></h2>
+      </div>
+      <div class="sk-num">07</div>
+    </div>
+    <div class="sk-grid">
+      <div class="skc rv" data-d="0"><div class="skc-glow"></div><div class="sk-ic"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div class="sk-n">Barista &amp; Bartender</div><div class="sk-d">Meracik kopi espresso, latte art, mocktail &amp; cocktail dengan presisi dan kreativitas tinggi.</div><div class="sk-bw"><div class="sk-b" data-w="90"></div></div><div class="sk-pct">90%</div></div>
+      <div class="skc rv" data-d="1"><div class="skc-glow"></div><div class="sk-ic"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg></div><div class="sk-n">Excellent Table Service</div><div class="sk-d">Melayani tamu dengan standar internasional — dari fine dining hingga banquet service.</div><div class="sk-bw"><div class="sk-b" data-w="88"></div></div><div class="sk-pct">88%</div></div>
+      <div class="skc rv" data-d="2"><div class="skc-glow"></div><div class="sk-ic"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></div><div class="sk-n">Turndown Service</div><div class="sk-d">Menyiapkan kamar hotel dengan sentuhan elegan untuk kenyamanan tamu di malam hari.</div><div class="sk-bw"><div class="sk-b" data-w="82"></div></div><div class="sk-pct">82%</div></div>
+      <div class="skc rv" data-d="0"><div class="skc-glow"></div><div class="sk-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="sk-n">Good Communication</div><div class="sk-d">Komunikasi efektif dalam Bahasa Indonesia &amp; Inggris untuk melayani beragam tamu.</div><div class="sk-bw"><div class="sk-b" data-w="92"></div></div><div class="sk-pct">92%</div></div>
+      <div class="skc rv" data-d="1"><div class="skc-glow"></div><div class="sk-ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div class="sk-n">Singer</div><div class="sk-d">Pengalaman tampil di berbagai acara — live performance, event hotel &amp; entertainment.</div><div class="sk-bw"><div class="sk-b" data-w="85"></div></div><div class="sk-pct">85%</div></div>
+      <div class="skc rv" data-d="2"><div class="skc-glow"></div><div class="sk-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v8"/><path d="M8 10l4 2 4-2"/><path d="M9 17l-2 4"/><path d="M15 17l2 4"/></svg></div><div class="sk-n">Dancer</div><div class="sk-d">Penampilan tari tradisional &amp; modern untuk hiburan tamu dan acara spesial hotel.</div><div class="sk-bw"><div class="sk-b" data-w="80"></div></div><div class="sk-pct">80%</div></div>
+      <div class="skc rv" data-d="1"><div class="skc-glow"></div><div class="sk-ic"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg></div><div class="sk-n">Artistic</div><div class="sk-d">Kreativitas dalam dekorasi meja, food plating, latte art, dan elemen visual lainnya.</div><div class="sk-bw"><div class="sk-b" data-w="87"></div></div><div class="sk-pct">87%</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ EXPERIENCE ══════ -->
+<section class="exp sec" id="exp">
+  <div class="inner">
+    <div class="rv">
+      <div class="sec-label"><div class="sec-label-line"></div>Pengalaman</div>
+      <h2 class="sh2">Perjalanan <em>Karir</em></h2>
+    </div>
+    <div class="exp-layout rv">
+      <div class="exp-sb">
+        <button class="exp-tb on" onclick="et(0)"><div class="exp-tb-in"><div class="exp-tb-t">PKL Hotel</div><div class="exp-tb-s">Front Office</div></div></button>
+        <button class="exp-tb" onclick="et(1)"><div class="exp-tb-in"><div class="exp-tb-t">Waiter</div><div class="exp-tb-s">Restoran &amp; Café</div></div></button>
+        <button class="exp-tb" onclick="et(2)"><div class="exp-tb-in"><div class="exp-tb-t">Barista</div><div class="exp-tb-s">Coffee Shop</div></div></button>
+        <button class="exp-tb" onclick="et(3)"><div class="exp-tb-in"><div class="exp-tb-t">Event</div><div class="exp-tb-s">Panitia Kampus</div></div></button>
+      </div>
+      <div>
+        <div class="exp-panel on" id="ep0">
+          <div class="ep-hd"><div><div class="ep-title">Hotel Front Office</div><div class="ep-role">PKL — Praktik Kerja Lapangan</div></div><div class="ep-badge"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>Front Office</div></div>
+          <ul class="ep-list">
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Membantu proses check-in dan check-out tamu sesuai prosedur hotel bintang</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Melayani pertanyaan serta keluhan tamu dengan ramah dan profesional</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Menginput data reservasi ke sistem manajemen properti hotel</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Berkoordinasi dengan departemen housekeeping terkait kesiapan kamar</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Meningkatkan kemampuan komunikasi dan pelayanan pelanggan secara nyata</div></li>
+          </ul>
+        </div>
+        <div class="exp-panel" id="ep1">
+          <div class="ep-hd"><div><div class="ep-title">Restoran &amp; Café</div><div class="ep-role">Waiter / Waitress</div></div><div class="ep-badge"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/></svg>F&amp;B Service</div></div>
+          <ul class="ep-list">
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Melayani tamu dan mencatat pesanan dengan akurat menggunakan sistem POS</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Mengantarkan makanan &amp; minuman sesuai standar pelayanan dan urutan sajian</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Menjaga kebersihan dan kerapian area restoran selama jam operasional</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Bekerja sama dalam tim saat jam sibuk dengan koordinasi yang sangat baik</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Meningkatkan keterampilan komunikasi dan kemampuan customer service</div></li>
+          </ul>
+        </div>
+        <div class="exp-panel" id="ep2">
+          <div class="ep-hd"><div><div class="ep-title">Coffee Shop</div><div class="ep-role">Barista</div></div><div class="ep-badge"><svg viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>F&amp;B Beverages</div></div>
+          <ul class="ep-list">
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Membuat berbagai minuman kopi specialty dan non-kopi dengan standar tinggi</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Mengoperasikan mesin espresso semi-otomatis dan grinder manual</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Menjaga konsistensi rasa, temperatur, dan estetika penyajian minuman</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Melayani pelanggan dengan cepat, ramah, dan penuh semangat setiap hari</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Mengelola stok bahan baku dan membantu dalam inventory harian</div></li>
+          </ul>
+        </div>
+        <div class="exp-panel" id="ep3">
+          <div class="ep-hd"><div><div class="ep-title">Event Kampus</div><div class="ep-role">Panitia Event</div></div><div class="ep-badge"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Event Mgmt.</div></div>
+          <ul class="ep-list">
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Mengatur konsumsi peserta dan tamu sesuai standar protokol acara</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Berkoordinasi dengan vendor makanan untuk kelancaran logistik acara</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Membantu kelancaran jalannya acara dari persiapan hingga penutupan</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Melatih kemampuan manajemen waktu dalam situasi bertekanan tinggi</div></li>
+            <li class="ep-li"><div class="ep-dot"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ep-txt">Mengembangkan kemampuan kerja tim dan kepemimpinan di kelompok besar</div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SOFT SKILLS ══════ -->
+<section class="soft sec">
+  <div class="inner">
+    <div class="rv">
+      <div class="sec-label"><div class="sec-label-line"></div>Soft Skills</div>
+      <h2 class="sh2">Bakat yang <em>Membedakan</em></h2>
+    </div>
+    <div class="sf-grid">
+      <div class="sfc rv" data-d="0"><div class="sf-ic"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="sf-n">Komunikasi</div><div class="sf-s">Efektif &amp; Persuasif</div></div>
+      <div class="sfc rv" data-d="1"><div class="sf-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div class="sf-n">Customer Oriented</div><div class="sf-s">Ramah &amp; Empati</div></div>
+      <div class="sfc rv" data-d="2"><div class="sf-ic"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-.85a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div class="sf-n">Public Speaking</div><div class="sf-s">Percaya Diri</div></div>
+      <div class="sfc rv" data-d="3"><div class="sf-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="sf-n">Manajemen Waktu</div><div class="sf-s">Terorganisir</div></div>
+      <div class="sfc rv" data-d="1"><div class="sf-ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="sf-n">Kerja Tim</div><div class="sf-s">Kolaboratif</div></div>
+      <div class="sfc rv" data-d="2"><div class="sf-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="sf-n">Bahasa Asing</div><div class="sf-s">Inggris Aktif</div></div>
+      <div class="sfc rv" data-d="3"><div class="sf-ic"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="sf-n">Problem Solving</div><div class="sf-s">Cepat &amp; Tepat</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ROLES ══════ -->
+<section class="roles sec" id="roles">
+  <div class="inner">
+    <div class="rv">
+      <div class="sec-label"><div class="sec-label-line"></div>Area Kompetensi</div>
+      <h2 class="sh2">Dua Bidang <em>Utama</em></h2>
+    </div>
+    <div class="roles-grid">
+      <div class="rc rv">
+        <div class="rc-deco"></div><div class="rc-num">F&amp;B</div>
+        <div class="rc-hd"><div class="rc-ic"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg></div><div class="rc-t">Food &amp; Beverage</div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Waiter / Waitress</div><div class="rr-d">Melayani tamu di restoran atau hotel</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Barista</div><div class="rr-d">Membuat dan menyajikan minuman kopi</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Bartender</div><div class="rr-d">Meracik mocktail &amp; cocktail</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Cook / Chef</div><div class="rr-d">Memasak dan menyiapkan makanan</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Pastry Chef / Baker</div><div class="rr-d">Membuat roti dan dessert</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Fast Food Crew</div><div class="rr-d">Melayani makanan cepat saji</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Banquet Staff</div><div class="rr-d">Melayani acara wedding &amp; seminar</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Food Runner</div><div class="rr-d">Mengantar makanan ke meja tamu</div></div></div>
+      </div>
+      <div class="rc rv" data-d="2">
+        <div class="rc-deco"></div><div class="rc-num">HTL</div>
+        <div class="rc-hd"><div class="rc-ic"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div class="rc-t">Perhotelan</div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Front Office / Receptionist</div><div class="rr-d">Melayani check-in &amp; check-out tamu</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Concierge</div><div class="rr-d">Memberikan informasi dan bantuan tamu</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Housekeeping</div><div class="rr-d">Menjaga kebersihan kamar hotel</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Bellboy / Porter</div><div class="rr-d">Membantu membawa barang tamu</div></div></div>
+        <div class="rr"><div class="rr-dot"></div><div><div class="rr-n">Guest Relation Officer</div><div class="rr-d">Menangani kepuasan tamu (GRO)</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ CONTACT ══════ -->
+<section class="contact sec" id="contact">
+  <div class="ct-rings"><div class="ct-ring"></div><div class="ct-ring"></div><div class="ct-ring"></div><div class="ct-ring"></div></div>
+  <div class="ct-bg">Linkan</div>
+  <div class="ct-in rv">
+    <div class="sec-label" style="justify-content:center"><div class="sec-label-line"></div>Kontak</div>
+    <div class="ct-h">Ayo<br><em>Berkolaborasi!</em></div>
+    <p class="ct-p">Ada peluang menarik atau ingin berkolaborasi? Saya, Linkan M. Wuwungan, siap memberikan kontribusi terbaik untuk tim Anda.</p>
+    <div class="ct-links">
+      <a href="mailto:linkan@example.com" class="ct-a"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email Saya</a>
+      <a href="tel:+628000000000" class="ct-a"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.1 6.1l1.27-.85a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Telepon</a>
+      <a href="#" class="ct-a"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>
+      <a href="#" class="ct-a"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">Linkan M. Wuwungan</div>
+  <div class="f-dots"><span></span><span></span><span></span></div>
+  <div class="f-txt">© 2025 · Hospitality &amp; F&amp;B Portfolio</div>
+  <div class="f-txt">Built with Passion</div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+// ── LOADER ──
+let p=0;
+const ldp=document.getElementById('ldp');
+const lt=setInterval(()=>{p+=Math.random()*15+6;if(p>=100){p=100;clearInterval(lt);}ldp.textContent=Math.floor(p)+'%';},90);
+setTimeout(()=>document.getElementById('ld').classList.add('out'),2000);
+
+// ── CURSOR (only pointer device) ──
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+const isPointer=window.matchMedia('(hover:hover)').matches;
+if(isPointer){
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+  (function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(loop);})();
+  document.querySelectorAll('a,button,.skc,.sfc,.ps,.ptag,.h-pill,.rr,.rc,.hl,.h-stat').forEach(el=>{
+    el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+    el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+  });
+  // scramble on logo hover
+  document.querySelectorAll('[data-sc]').forEach(el=>{
+    const orig=el.dataset.sc;
+    const ch='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    let iv;
+    el.addEventListener('mouseenter',()=>{
+      let f=0;clearInterval(iv);
+      iv=setInterval(()=>{
+        el.textContent=orig.split('').map((c,i)=>c===' '?' ':i<f?orig[i]:ch[Math.floor(Math.random()*ch.length)]).join('');
+        f+=2;if(f>orig.length){el.textContent=orig;clearInterval(iv);}
+      },28);
+    });
+  });
+  // magnetic buttons
+  document.querySelectorAll('.mag').forEach(b=>{
+    b.addEventListener('mousemove',e=>{
+      const r=b.getBoundingClientRect();
+      const x=(e.clientX-r.left-r.width/2)*.25;
+      const y=(e.clientY-r.top-r.height/2)*.25;
+      b.style.transform=`translate(${x}px,${y}px)`;
+    });
+    b.addEventListener('mouseleave',()=>b.style.transform='');
+  });
+}
+
+// ── PARTICLE CANVAS ──
+const cvs=document.getElementById('cvs');
+const ctx=cvs.getContext('2d');
+let W,H,pts=[];
+function rsz(){W=cvs.width=window.innerWidth;H=cvs.height=window.innerHeight;}
+rsz();window.addEventListener('resize',()=>{rsz();init();});
+class Pt{
+  constructor(){this.rst();}
+  rst(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.28;this.vy=(Math.random()-.5)*.28;this.life=0;this.ml=160+Math.random()*180;this.sz=Math.random()*1.4+.3;this.cross=Math.random()>.82;}
+  tick(){
+    this.x+=this.vx;this.y+=this.vy;this.life++;
+    if(this.x<-10||this.x>W+10||this.y<-10||this.y>H+10||this.life>this.ml)this.rst();
+    if(isPointer){const dx=mx-this.x,dy=my-this.y,d=Math.sqrt(dx*dx+dy*dy);if(d<180){this.vx+=dx/d*.007;this.vy+=dy/d*.007;}}
+    this.vx*=.99;this.vy*=.99;
+  }
+  draw(){
+    const a=Math.sin(this.life/this.ml*Math.PI)*.55;
+    ctx.globalAlpha=a;
+    if(this.cross){ctx.strokeStyle='rgba(196,154,60,1)';ctx.lineWidth=.55;ctx.beginPath();ctx.moveTo(this.x-4,this.y);ctx.lineTo(this.x+4,this.y);ctx.moveTo(this.x,this.y-4);ctx.lineTo(this.x,this.y+4);ctx.stroke();}
+    else{ctx.fillStyle='rgba(196,154,60,1)';ctx.beginPath();ctx.arc(this.x,this.y,this.sz,0,Math.PI*2);ctx.fill();}
+  }
+}
+function init(){pts=[];for(let i=0;i<70;i++){const pt=new Pt();pt.life=Math.random()*pt.ml;pts.push(pt);}}
+init();
+(function loop(){
+  ctx.clearRect(0,0,W,H);
+  pts.forEach(p=>{p.tick();p.draw();});
+  // connections
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<90){ctx.globalAlpha=(1-d/90)*.1;ctx.strokeStyle='rgba(196,154,60,1)';ctx.lineWidth=.35;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.stroke();}
+  }
+  ctx.globalAlpha=1;requestAnimationFrame(loop);
+})();
+
+// ── NAV ──
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('sc',scrollY>55),{passive:true});
+
+// ── MOBILE NAV ──
+function tm(){document.getElementById('bg').classList.toggle('op');document.getElementById('mob').classList.toggle('op');}
+function cm(){document.getElementById('bg').classList.remove('op');document.getElementById('mob').classList.remove('op');}
+
+// ── BUILD MARQUEE ──
+const m1=['Linkan M. Wuwungan','Barista & Bartender','Table Service','Front Office','Turndown Service','Guest Relations','Event Management','Singer & Dancer','Artistic'];
+const m2=['Hospitality Professional','F&B Specialist','Hotel Industry','Customer Service','Fine Dining','Banquet Staff','Concierge','Housekeeping','PKL Certified'];
+function mkMq(id,items){
+  const el=document.getElementById(id);if(!el)return;
+  const full=[...items,...items,...items,...items];
+  el.innerHTML=full.map(i=>`<span class="mq-item"><span class="mq-dot"></span>${i}</span>`).join('');
+}
+mkMq('mq1',m1);mkMq('mq2',m2);
+
+// ── INTERSECTION OBSERVER ──
+const io=new IntersectionObserver(en=>{en.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});},{threshold:.07,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv,.rvl,.rvr,.rsc').forEach(r=>io.observe(r));
+
+// ── SKILL BARS ──
+const sbo=new IntersectionObserver(en=>{
+  en.forEach(e=>{if(e.isIntersecting){const b=e.target.querySelector('.sk-b');if(b)setTimeout(()=>{b.style.width=b.dataset.w+'%';},350+(+(e.target.dataset.d||0))*100);}});
+},{threshold:.35});
+document.querySelectorAll('.skc').forEach(c=>sbo.observe(c));
+
+// hero stat bars
+const hio=new IntersectionObserver(en=>{
+  en.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.h-stat-fill').forEach(b=>setTimeout(()=>{b.style.width=b.dataset.w+'%';},600));}});
+},{threshold:.2});
+const hs=document.getElementById('hstats');if(hs)hio.observe(hs);
+
+// ── COUNTERS ──
+const cio=new IntersectionObserver(en=>{
+  en.forEach(e=>{if(!e.isIntersecting)return;const el=e.target,t=+el.dataset.t;let n=0;const s=Math.max(1,Math.ceil(t/50));const iv=setInterval(()=>{n=Math.min(n+s,t);el.textContent=n+(t===100?'%':'');if(n>=t)clearInterval(iv);},35);cio.unobserve(el);});
+},{threshold:.65});
+document.querySelectorAll('[data-t]').forEach(n=>cio.observe(n));
+
+// ── EXP TABS ──
+function et(i){
+  document.querySelectorAll('.exp-tb').forEach((t,j)=>t.classList.toggle('on',j===i));
+  document.querySelectorAll('.exp-panel').forEach((p,j)=>p.classList.toggle('on',j===i));
+}
+
+// ── PARALLAX hero (only desktop) ──
+if(isPointer){
+  window.addEventListener('scroll',()=>{
+    const sy=scrollY;
+    const hn=document.getElementById('hname');
+    if(hn)hn.style.transform=`translateY(${sy*.12}px)`;
+    const hm=document.querySelector('.h-mesh');
+    if(hm)hm.style.transform=`translateY(${sy*.07}px)`;
+  },{passive:true});
+}
+</script>
+</body>
+</html>
